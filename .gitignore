@@ -10,6 +10,7 @@ DerivedData/
 # Build
 build/
 dist/
+ipa-output/
 *.ipa
 *.xcarchive
 certificate.p12

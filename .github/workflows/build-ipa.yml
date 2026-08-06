@@ -36,7 +36,6 @@ jobs:
 
     env:
       BUNDLE_ID: com.meucarro.app
-      KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
       KEYCHAIN_PASSWORD: runner-keychain-temp
 
     steps:
@@ -51,6 +50,7 @@ jobs:
       - name: Instalar certificado e perfil de provisionamento
         if: ${{ inputs.signing == 'manual' }}
         env:
+          KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
           IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
@@ -136,6 +136,8 @@ jobs:
             -exportPath "$RUNNER_TEMP/ipa" \
             -exportOptionsPlist ExportOptions.plist \
             -allowProvisioningUpdates
+          mkdir -p "$GITHUB_WORKSPACE/ipa-output"
+          cp "$RUNNER_TEMP"/ipa/*.ipa "$GITHUB_WORKSPACE/ipa-output/"
 
       # ---------------- Sem assinatura ----------------
 
@@ -166,6 +168,8 @@ jobs:
           cd "$RUNNER_TEMP/ipa"
           zip -qry "MeuCarro-unsigned.ipa" Payload/
           ls -la
+          mkdir -p "$GITHUB_WORKSPACE/ipa-output"
+          cp "$RUNNER_TEMP"/ipa/*.ipa "$GITHUB_WORKSPACE/ipa-output/"
 
       # ---------------- Resultado ----------------
 
@@ -177,5 +181,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MeuCarro-${{ inputs.configuration || 'Release' }}-${{ inputs.signing || 'none' }}
-          path: ${{ runner.temp }}/ipa/*.ipa
+          path: ipa-output/*.ipa
           if-no-files-found: error
