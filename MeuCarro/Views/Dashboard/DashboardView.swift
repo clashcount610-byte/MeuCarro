@@ -31,88 +31,148 @@ struct DashboardView: View {
     }
 
     var body: some View {
-        List {
-            Section {
+        ScrollView {
+            VStack(spacing: 0) {
+                // Header
                 HStack {
-                    Label("Odômetro", systemImage: "speedometer")
+                    Text(vehicle?.name ?? "Meu Carro")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
                     Spacer()
-                    Text(odometerText)
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
-                        .monospacedDigit()
-                }
-            } header: {
-                Text(vehicle?.name ?? "Meu Carro")
-            }
-
-            Section("Ações rápidas") {
-                Button {
-                    showAddFuel = true
-                } label: {
-                    Label("Registrar abastecimento", systemImage: "fuelpump.fill")
-                }
-                Button {
-                    showTrips = true
-                } label: {
-                    Label("Ver percursos", systemImage: "mappin.and.ellipse")
-                }
-                Button {
-                    showZeroToHundred = true
-                } label: {
-                    Label("Teste 0–100 km/h", systemImage: "gauge.with.dots.needle.67percent")
-                }
-            }
-
-            Section("Estatísticas") {
-                statRow(title: "Consumo médio", value: averageConsumption.map(Format.kmPerL) ?? "--", icon: "gauge.with.dots.needle.50percent")
-                statRow(title: "Gasto no mês", value: Format.money(monthStats.total), icon: "dollarsign.circle.fill")
-                statRow(title: "Custo por km", value: monthStats.costPerKm.map(Format.moneyPerKm) ?? "--", icon: "sum")
-                statRow(title: "Distância no mês", value: Format.km(monthStats.distanceKm), icon: "road.lanes")
-            }
-
-            if let last = fills.first {
-                Section("Último abastecimento") {
-                    HStack {
-                        Label("\(Format.liters(last.liters)) • \(Format.money(last.totalCost))", systemImage: "fuelpump.fill")
-                        Spacer()
-                        if let consumption = lastConsumption {
-                            Text(Format.kmPerL(consumption))
-                                .fontWeight(.semibold)
-                        }
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.title2)
                     }
-                    Text("\(Format.dateMedium.string(from: last.date)) • \(Format.km(last.odometerKm))")
+                }
+                .padding()
+
+                // Odometer card
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Odômetro", systemImage: "speedometer")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    Text(odometerText)
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .monospacedDigit()
                 }
-            }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
 
-            Section("Percursos recentes") {
-                if trips.isEmpty {
-                    Text("Nenhum percurso registrado.")
-                        .foregroundStyle(.secondary)
-                }
-                ForEach(trips.prefix(3)) { trip in
+                // Quick actions
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Ações rápidas")
+                        .font(.headline)
+                    
                     Button {
-                        selectedTrip = trip
+                        showAddFuel = true
                     } label: {
+                        Label("Registrar abastecimento", systemImage: "fuelpump.fill")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button {
+                        showTrips = true
+                    } label: {
+                        Label("Ver percursos", systemImage: "mappin.and.ellipse")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button {
+                        showZeroToHundred = true
+                    } label: {
+                        Label("Teste 0–100 km/h", systemImage: "gauge.with.dots.needle.67percent")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                .padding(.top)
+
+                // Stats
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Estatísticas")
+                        .font(.headline)
+                    
+                    statRow(title: "Consumo médio", value: averageConsumption.map(Format.kmPerL) ?? "--", icon: "gauge.with.dots.needle.50percent")
+                    statRow(title: "Gasto no mês", value: Format.money(monthStats.total), icon: "dollarsign.circle.fill")
+                    statRow(title: "Custo por km", value: monthStats.costPerKm.map(Format.moneyPerKm) ?? "--", icon: "sum")
+                    statRow(title: "Distância no mês", value: Format.km(monthStats.distanceKm), icon: "road.lanes")
+                }
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                .padding(.top)
+
+                // Last fill
+                if let last = fills.first {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Último abastecimento")
+                            .font(.headline)
+                        
                         HStack {
-                            Label(Format.km(trip.distanceKm), systemImage: "mappin.and.ellipse")
+                            Label("\(Format.liters(last.liters)) • \(Format.money(last.totalCost))", systemImage: "fuelpump.fill")
                             Spacer()
-                            Text(Format.dateTimeShort.string(from: trip.startDate))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            if let consumption = lastConsumption {
+                                Text(Format.kmPerL(consumption))
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                        
+                        Text("\(Format.dateMedium.string(from: last.date)) • \(Format.km(last.odometerKm))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+                    .padding(.top)
+                }
+
+                // Recent trips
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Percursos recentes")
+                        .font(.headline)
+                    
+                    if trips.isEmpty {
+                        Text("Nenhum percurso registrado.")
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(trips.prefix(3)) { trip in
+                            Button {
+                                selectedTrip = trip
+                            } label: {
+                                HStack {
+                                    Label(Format.km(trip.distanceKm), systemImage: "mappin.and.ellipse")
+                                    Spacer()
+                                    Text(Format.dateTimeShort.string(from: trip.startDate))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .buttonStyle(.borderless)
                         }
                     }
                 }
-            }
-        }
-        .navigationTitle(vehicle?.name ?? "Meu Carro")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape.fill")
-                }
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                .padding(.top)
+
+                Spacer(minLength: 20)
             }
         }
         .sheet(isPresented: $showAddFuel) {
