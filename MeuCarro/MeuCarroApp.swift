@@ -12,7 +12,7 @@ struct MeuCarroApp: App {
             Trip.self,
             PerformanceRun.self,
         ])
-        
+
         do {
             container = try ModelContainer(
                 for: schema,
@@ -34,6 +34,15 @@ struct MeuCarroApp: App {
                     container = try! ModelContainer(for: Schema([]))
                 }
             }
+        }
+
+        // Garante um veículo padrão antes da primeira renderização,
+        // evitando atualizar @Query durante o ciclo de vida da view.
+        let context = ModelContext(container)
+        let descriptor = FetchDescriptor<VehicleInfo>()
+        if (try? context.fetch(descriptor))?.isEmpty != false {
+            context.insert(VehicleInfo())
+            try? context.save()
         }
     }
 

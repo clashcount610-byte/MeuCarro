@@ -57,8 +57,8 @@ struct AddTripView: View {
                     dismiss()
                 }
             }
-            .onAppear { recorder.start() }
         }
+        .task { recorder.start() }
     }
 
     private func metric(_ title: String, _ value: String) -> some View {

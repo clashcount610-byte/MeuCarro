@@ -58,7 +58,6 @@ struct SettingsView: View {
         .confirmationDialog("Apagar todos os dados?", isPresented: $confirmClear, titleVisibility: .visible) {
             Button("Apagar tudo", role: .destructive) { clearAll() }
         }
-        .onAppear { ensureVehicle() }
     }
 
     private func ensureVehicle() {

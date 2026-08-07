@@ -67,7 +67,7 @@ struct AddFuelView: View {
                 Button("Cancelar") { dismiss() }
             }
         }
-        .onAppear {
+        .task {
             odometer = vehicle?.odometerKm ?? 0
             fuelType = vehicle?.fuelType ?? .gasolina
         }

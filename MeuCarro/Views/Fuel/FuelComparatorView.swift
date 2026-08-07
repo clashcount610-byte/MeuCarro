@@ -46,7 +46,7 @@ struct FuelComparatorView: View {
             }
             .padding()
         }
-        .onAppear {
+        .task {
             if let r = vehicle?.ethanolRatio { ratio = r }
         }
     }

@@ -3,7 +3,6 @@ import SwiftUI
 
 // MARK: - Container (somente @Query, sem UI de lista)
 struct DashboardView: View {
-    @Environment(\.modelContext) private var context
     @Query private var vehicles: [VehicleInfo]
     @Query(sort: \FuelFill.date, order: .reverse) private var fills: [FuelFill]
     @Query(sort: \Trip.startDate, order: .reverse) private var trips: [Trip]
@@ -45,12 +44,6 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack { SettingsView() }
-        }
-        .onAppear {
-            if vehicles.isEmpty {
-                context.insert(VehicleInfo())
-                try? context.save()
-            }
         }
     }
 }
