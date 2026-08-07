@@ -6,7 +6,12 @@ struct DashboardView: View {
     @Query private var vehicles: [VehicleInfo]
     @Query(sort: \FuelFill.date, order: .reverse) private var fills: [FuelFill]
     @Query(sort: \Trip.startDate, order: .reverse) private var trips: [Trip]
+
     @State private var showAddFuel = false
+    @State private var showSettings = false
+    @State private var showTrips = false
+    @State private var showZeroToHundred = false
+    @State private var selectedTrip: Trip?
 
     private var vehicle: VehicleInfo? { vehicles.first }
 
@@ -31,15 +36,10 @@ struct DashboardView: View {
                 HStack {
                     Label("Odômetro", systemImage: "speedometer")
                     Spacer()
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Image(systemName: "pencil")
-                    }
+                    Text(odometerText)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .monospacedDigit()
                 }
-                Text(odometerText)
-                    .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .monospacedDigit()
             } header: {
                 Text(vehicle?.name ?? "Meu Carro")
             }
@@ -50,13 +50,13 @@ struct DashboardView: View {
                 } label: {
                     Label("Registrar abastecimento", systemImage: "fuelpump.fill")
                 }
-                NavigationLink {
-                    TripsView()
+                Button {
+                    showTrips = true
                 } label: {
                     Label("Ver percursos", systemImage: "mappin.and.ellipse")
                 }
-                NavigationLink {
-                    ZeroToHundredView()
+                Button {
+                    showZeroToHundred = true
                 } label: {
                     Label("Teste 0–100 km/h", systemImage: "gauge.with.dots.needle.67percent")
                 }
@@ -91,8 +91,8 @@ struct DashboardView: View {
                         .foregroundStyle(.secondary)
                 }
                 ForEach(trips.prefix(3)) { trip in
-                    NavigationLink {
-                        TripDetailView(trip: trip)
+                    Button {
+                        selectedTrip = trip
                     } label: {
                         HStack {
                             Label(Format.km(trip.distanceKm), systemImage: "mappin.and.ellipse")
@@ -108,8 +108,8 @@ struct DashboardView: View {
         .navigationTitle(vehicle?.name ?? "Meu Carro")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    SettingsView()
+                Button {
+                    showSettings = true
                 } label: {
                     Image(systemName: "gearshape.fill")
                 }
@@ -117,6 +117,18 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showAddFuel) {
             NavigationStack { AddFuelView() }
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack { SettingsView() }
+        }
+        .sheet(isPresented: $showTrips) {
+            NavigationStack { TripsView() }
+        }
+        .sheet(isPresented: $showZeroToHundred) {
+            NavigationStack { ZeroToHundredView() }
+        }
+        .sheet(item: $selectedTrip) { trip in
+            NavigationStack { TripDetailView(trip: trip) }
         }
     }
 
