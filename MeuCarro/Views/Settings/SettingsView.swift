@@ -11,7 +11,7 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Veículo") {
+            Section {
                 TextField("Nome", text: nameBinding)
                 HStack {
                     Text("Odômetro (km)")
@@ -33,6 +33,8 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 Slider(value: ratioBinding, in: 0.60...0.90, step: 0.01)
+            } header: {
+                Text("Veículo")
             } footer: {
                 Text("O odômetro é atualizado automaticamente a cada percurso registrado.")
             }
