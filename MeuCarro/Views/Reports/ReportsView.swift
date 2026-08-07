@@ -176,6 +176,7 @@ struct ReportsView: View {
         }
         .frame(maxWidth: .infinity)
     }
+}
 
 #Preview {
     NavigationStack {
