@@ -52,12 +52,12 @@ enum FuelCalculator {
     }
 
     static func monthStats(fills: [FuelFill], for date: Date = .now) -> MonthStats {
-        let month = Calendar.current.dateInterval(of: .month, for: date) ?? date.startOfMonth
+        guard let month = Calendar.current.dateInterval(of: .month, for: date) else { return MonthStats() }
         let inMonth = fills.filter { month.contains($0.date) }
         guard !inMonth.isEmpty else { return MonthStats() }
 
         let total = inMonth.reduce(0) { $0 + $1.totalCost }
-        let odometers = inMonth.map(\.odometerKm)
+        let odometers: [Double] = inMonth.map(\.odometerKm)
         let distance = (odometers.max() ?? 0) - (odometers.min() ?? 0)
         return MonthStats(total: total, distanceKm: max(distance, 0))
     }

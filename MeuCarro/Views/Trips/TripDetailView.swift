@@ -69,7 +69,7 @@ struct TripDetailView: View {
             .frame(height: 160)
             .chartXAxis {
                 AxisMarks(values: .automatic(desiredCount: 5)) { _ in
-                    AxisValueLabel(format: .number)
+                    AxisValueLabel(format: IntegerFormatStyle<Int>.number)
                 }
             }
             .chartYAxisLabel("km/h", position: .trailing)

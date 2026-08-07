@@ -32,7 +32,7 @@ struct AddTripView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancelar") {
                         if recorder.isRecording {
-                            recorder.stop()
+                            _ = recorder.stop()
                         }
                         dismiss()
                     }
@@ -40,7 +40,7 @@ struct AddTripView: View {
             }
             .confirmationDialog("Descartar este percurso?", isPresented: $showDiscardConfirm, titleVisibility: .visible) {
                 Button("Descartar", role: .destructive) {
-                    recorder.stop()
+                    _ = recorder.stop()
                     dismiss()
                 }
             }

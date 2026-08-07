@@ -85,7 +85,7 @@ struct DashboardView: View {
 
     private var odometerText: String {
         guard let vehicle else { return "0" }
-        return Format.number(vehicle.odometerKm, formatter: .decimal1)
+        return Format.number(vehicle.odometerKm, formatter: Format.decimal1)
     }
 
     // MARK: - Ações rápidas

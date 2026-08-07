@@ -16,7 +16,7 @@ struct SettingsView: View {
                 HStack {
                     Text("Odômetro (km)")
                     Spacer()
-                    TextField("0", value: odometerBinding, format: .number)
+                    TextField("0", value: odometerBinding, format: FloatingPointFormatStyle<Double>.number)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 140)

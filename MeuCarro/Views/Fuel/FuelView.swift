@@ -47,8 +47,7 @@ struct FuelView: View {
     }
 
     private var monthSections: [MonthSection] {
-        let calendar = Calendar.current
-        let grouped = Dictionary(grouping: fills) { calendar.startOfMonth(for: $0.date) }
+        let grouped = Dictionary(grouping: fills) { $0.date.startOfMonth }
         return grouped.keys.sorted(by: >).map { month in
             MonthSection(
                 id: month,
