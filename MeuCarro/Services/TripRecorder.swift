@@ -1,18 +1,19 @@
 import CoreLocation
 import Foundation
-import Observation
+import Combine
 
-@Observable
-final class TripRecorder {
+final class TripRecorder: ObservableObject {
     private let service: LocationService
 
-    private(set) var points: [TripPoint] = []
-    private(set) var distanceKm: Double = 0
-    private(set) var maxSpeedKmh: Double = 0
-    private(set) var startDate: Date?
-    private(set) var isRecording = false
+    @Published private(set) var points: [TripPoint] = []
+    @Published private(set) var distanceKm: Double = 0
+    @Published private(set) var maxSpeedKmh: Double = 0
+    @Published private(set) var startDate: Date?
+    @Published private(set) var isRecording = false
+    @Published private(set) var tick = Date.now
 
     private var lastLocation: CLLocation?
+    private var timer: Timer?
 
     init(service: LocationService) {
         self.service = service
@@ -22,7 +23,7 @@ final class TripRecorder {
 
     var elapsed: TimeInterval {
         guard let startDate else { return 0 }
-        return Date.now.timeIntervalSince(startDate)
+        return tick.timeIntervalSince(startDate)
     }
 
     var avgSpeedKmh: Double {
@@ -39,14 +40,20 @@ final class TripRecorder {
         lastLocation = service.lastLocation
         startDate = .now
         isRecording = true
+        tick = .now
         service.onUpdate = { [weak self] location in
             self?.handle(location)
         }
         service.requestPermission()
         service.start()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.tick = .now
+        }
     }
 
     func stop() -> Trip? {
+        timer?.invalidate()
+        timer = nil
         service.onUpdate = nil
         service.stop()
         isRecording = false

@@ -2,87 +2,65 @@ import SwiftData
 import SwiftUI
 
 struct TripsView: View {
-    @State private var locationService = LocationService()
     @Environment(\.modelContext) private var context
     @Query(sort: \Trip.startDate, order: .reverse) private var trips: [Trip]
+    @StateObject private var locationService = LocationService()
     @State private var showRecorder = false
 
     var body: some View {
         Group {
             if trips.isEmpty {
-                ContentUnavailableView {
-                    Label("Nenhum percurso", systemImage: "mappin.slash")
-                } description: {
-                    Text("Toque em registrar para gravar sua primeira viagem com GPS.")
-                } actions: {
-                    Button {
-                        showRecorder = true
-                    } label: {
-                        Label("Registrar percurso", systemImage: "record.circle")
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
+                ContentUnavailableView(
+                    "Nenhum percurso",
+                    systemImage: "map",
+                    description: Text("Toque em Registrar para gravar uma viagem com GPS.")
+                )
             } else {
-                List {
-                    ForEach(trips) { trip in
-                        NavigationLink {
-                            TripDetailView(trip: trip)
-                        } label: {
-                            TripRow(trip: trip)
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(trips) { trip in
+                            NavigationLink {
+                                TripDetailView(trip: trip)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(trip.title.isEmpty ? "Percurso" : trip.title)
+                                        .fontWeight(.semibold)
+                                    Text("\(Format.dateTimeShort.string(from: trip.startDate)) · \(Format.duration(trip.duration))")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    HStack {
+                                        Text(Format.km(trip.distanceKm))
+                                        Spacer()
+                                        Text("máx \(Format.speed(trip.maxSpeedKmh))")
+                                    }
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button("Excluir", role: .destructive) {
+                                    context.delete(trip)
+                                    try? context.save()
+                                }
+                            }
                         }
                     }
-                    .onDelete(perform: delete)
+                    .padding()
                 }
             }
         }
         .navigationTitle("Percursos")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showRecorder = true
-                } label: {
-                    Label("Registrar", systemImage: "record.circle")
-                }
+                Button("Registrar") { showRecorder = true }
             }
         }
         .sheet(isPresented: $showRecorder) {
             AddTripView(locationService: locationService)
         }
-    }
-
-    private func delete(_ indexSet: IndexSet) {
-        for index in indexSet {
-            context.delete(trips[index])
-        }
-        try? context.save()
-    }
-}
-
-struct TripRow: View {
-    let trip: Trip
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(trip.title.isEmpty ? "Percurso" : trip.title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-            Text("\(Format.dateTimeShort.string(from: trip.startDate)) • \(Format.duration(trip.duration))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack {
-                Label(Format.km(trip.distanceKm), systemImage: "point.topleft.down.to.point.bottomright.curvepath")
-                Spacer()
-                Label(Format.speed(trip.maxSpeedKmh), systemImage: "gauge.with.dots.needle.67percent")
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 2)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        TripsView()
     }
 }

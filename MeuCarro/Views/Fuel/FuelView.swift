@@ -2,23 +2,22 @@ import SwiftData
 import SwiftUI
 
 struct FuelView: View {
-    @Query(sort: \FuelFill.date, order: .reverse) private var fills: [FuelFill]
     @Environment(\.modelContext) private var context
+    @Query(sort: \FuelFill.date, order: .reverse) private var fills: [FuelFill]
     @State private var showAdd = false
-    @State private var selectedSegment = 0
+    @State private var tab = 0
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("Seção", selection: $selectedSegment) {
+            Picker("", selection: $tab) {
                 Text("Histórico").tag(0)
                 Text("Comparar").tag(1)
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding()
 
-            if selectedSegment == 0 {
-                historyList
+            if tab == 0 {
+                history
             } else {
                 FuelComparatorView()
             }
@@ -38,103 +37,50 @@ struct FuelView: View {
         }
     }
 
-    // MARK: - Histórico
-
-    private struct MonthSection: Identifiable {
-        let id: Date
-        let title: String
-        let fills: [FuelFill]
-    }
-
-    private var monthSections: [MonthSection] {
-        let grouped = Dictionary(grouping: fills) { $0.date.startOfMonth }
-        return grouped.keys.sorted(by: >).map { month in
-            MonthSection(
-                id: month,
-                title: month.formatted(.dateTime.month(.wide).year()),
-                fills: grouped[month]!.sorted { $0.date > $1.date }
-            )
-        }
-    }
-
-    @ViewBuilder
-    private var historyList: some View {
-        if fills.isEmpty {
-            ContentUnavailableView {
-                Label("Sem abastecimentos", systemImage: "fuelpump.slash")
-            } description: {
-                Text("Registre o primeiro abastecimento para acompanhar o consumo real.")
-            } actions: {
-                Button("Registrar abastecimento") {
-                    showAdd = true
-                }
-                .buttonStyle(.borderedProminent)
-            }
-        } else {
-            List {
-                ForEach(monthSections) { section in
-                    Section(section.title) {
-                        ForEach(section.fills) { fill in
-                            FuelRow(fill: fill)
-                        }
-                        .onDelete { indexSet in
-                            deleteFills(indexSet, in: section)
+    private var history: some View {
+        Group {
+            if fills.isEmpty {
+                ContentUnavailableView(
+                    "Sem abastecimentos",
+                    systemImage: "fuelpump",
+                    description: Text("Toque em + para registrar o primeiro.")
+                )
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 12) {
+                        ForEach(fills) { fill in
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text(Format.dateMedium.string(from: fill.date))
+                                        .fontWeight(.semibold)
+                                    Spacer()
+                                    Text(Format.money(fill.totalCost))
+                                }
+                                Text("\(Format.liters(fill.liters)) · \(Format.pricePerLiter(fill.pricePerLiter)) · \(Format.km(fill.odometerKm))")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                if fill.isFullTank {
+                                    Text("Tanque cheio")
+                                        .font(.caption2)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 2)
+                                        .background(.green.opacity(0.2), in: Capsule())
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                            .contextMenu {
+                                Button("Excluir", role: .destructive) {
+                                    context.delete(fill)
+                                    try? context.save()
+                                }
+                            }
                         }
                     }
+                    .padding()
                 }
             }
         }
-    }
-
-    private func deleteFills(_ indexSet: IndexSet, in section: MonthSection) {
-        for index in indexSet {
-            let fill = section.fills[index]
-            context.delete(fill)
-        }
-        try? context.save()
-    }
-}
-
-struct FuelRow: View {
-    let fill: FuelFill
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Label(fill.fuelType.label, systemImage: fill.fuelType.icon)
-                    .font(.subheadline)
-                    .foregroundStyle(fill.fuelType.color)
-                Spacer()
-                if fill.isFullTank {
-                    Text("Tanque cheio")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.green.opacity(0.15)))
-                        .foregroundStyle(.green)
-                }
-            }
-
-            Text(Format.dateTimeShort.string(from: fill.date))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            HStack {
-                Text(Format.liters(fill.liters))
-                Text("•")
-                    .foregroundStyle(.secondary)
-                Text(Format.pricePerLiter(fill.pricePerLiter))
-                Spacer()
-                Text(Format.money(fill.totalCost))
-                    .fontWeight(.semibold)
-            }
-            .font(.subheadline)
-
-            Text("Odômetro: \(Format.km(fill.odometerKm))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 2)
     }
 }

@@ -27,17 +27,8 @@ struct MeuCarroApp: App {
 
     var body: some Scene {
         WindowGroup {
-            // Tela mínima de diagnóstico: se ISTO crashar, o problema não é a UI do app
-            ContentView()
+            MainTabView()
                 .modelContainer(container)
         }
-    }
-}
-
-struct ContentView: View {
-    var body: some View {
-        Text("MeuCarro OK")
-            .font(.title)
-            .padding()
     }
 }

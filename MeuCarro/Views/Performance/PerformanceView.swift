@@ -6,60 +6,68 @@ struct PerformanceView: View {
     @Query(sort: \PerformanceRun.date, order: .reverse) private var runs: [PerformanceRun]
 
     var body: some View {
-        List {
-            Section("Testes") {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
                 NavigationLink {
                     ZeroToHundredView()
                 } label: {
-                    Label("0–100 km/h", systemImage: "gauge.with.dots.needle.67percent")
+                    labelCard("0–100 km/h", "Medição por GPS", "gauge.with.dots.needle.67percent")
                 }
+
                 NavigationLink {
                     ColdStartView()
                 } label: {
-                    Label("Cold Start (cronômetro)", systemImage: "bolt.fill")
+                    labelCard("Cold Start", "Cronômetro de partida", "timer")
                 }
-            }
 
-            Section("Histórico de testes") {
+                Text("Histórico").font(.headline).padding(.top, 8)
+
                 if runs.isEmpty {
-                    Text("Nenhum teste registrado ainda.")
+                    Text("Nenhum teste salvo ainda.")
                         .foregroundStyle(.secondary)
-                }
-                ForEach(runs) { run in
-                    HStack(spacing: 12) {
-                        Image(systemName: run.type.icon)
-                            .foregroundStyle(run.type.color)
-                            .frame(width: 28)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(run.type.label)
-                                .fontWeight(.medium)
-                            Text(Format.dateTimeShort.string(from: run.date))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                } else {
+                    ForEach(runs) { run in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(run.type.label).fontWeight(.semibold)
+                                Text(Format.dateTimeShort.string(from: run.date))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(Format.stopwatch(run.duration))
+                                .fontWeight(.bold)
                         }
-                        Spacer()
-                        Text(Format.stopwatch(run.duration))
-                            .font(.system(.body, design: .monospaced))
-                            .fontWeight(.semibold)
+                        .padding()
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                        .contextMenu {
+                            Button("Excluir", role: .destructive) {
+                                context.delete(run)
+                                try? context.save()
+                            }
+                        }
                     }
                 }
-                .onDelete(perform: delete)
             }
+            .padding()
         }
         .navigationTitle("Performance")
     }
 
-    private func delete(_ indexSet: IndexSet) {
-        for index in indexSet {
-            context.delete(runs[index])
+    private func labelCard(_ title: String, _ subtitle: String, _ icon: String) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.title2)
+                .frame(width: 40)
+            VStack(alignment: .leading) {
+                Text(title).fontWeight(.semibold)
+                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right").foregroundStyle(.secondary)
         }
-        try? context.save()
-    }
-}
-
-#Preview {
-    NavigationStack {
-        PerformanceView()
+        .padding()
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .foregroundStyle(.primary)
     }
 }

@@ -13,64 +13,31 @@ struct AddFuelView: View {
     @State private var pricePerLiter = 0.0
     @State private var isFullTank = true
     @State private var fuelType: FuelType = .gasolina
-    @State private var notes = ""
 
     private var vehicle: VehicleInfo? { vehicles.first }
 
-    private var totalCost: Double {
-        liters * pricePerLiter
-    }
+    private var totalCost: Double { liters * pricePerLiter }
 
     private var consumptionPreview: Double? {
-        guard isFullTank,
-              liters > 0,
+        guard isFullTank, liters > 0,
               let previous = fills.first(where: { $0.isFullTank }),
               odometer > previous.odometerKm else { return nil }
         return FuelCalculator.kmPerL(distanceKm: odometer - previous.odometerKm, liters: liters)
     }
 
-    private var isValid: Bool {
-        liters > 0 && pricePerLiter > 0 && odometer >= 0
-    }
+    private var isValid: Bool { liters > 0 && pricePerLiter > 0 && odometer >= 0 }
 
     var body: some View {
-        Form {
-            Section("Dados do abastecimento") {
-                DatePicker("Data", selection: $date, displayedComponents: [.date, .hourAndMinute])
-
-                HStack {
-                    Text("Odômetro (km)")
-                    Spacer()
-                    TextField("0", value: $odometer, format: .number)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 140)
-                }
-
-                HStack {
-                    Text("Litros")
-                    Spacer()
-                    TextField("0", value: $liters, format: .number)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 140)
-                }
-
-                HStack {
-                    Text("Preço por litro (R$)")
-                    Spacer()
-                    TextField("0", value: $pricePerLiter, format: .number)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 140)
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                DatePicker("Data", selection: $date)
+                field("Odômetro (km)", value: $odometer)
+                field("Litros", value: $liters)
+                field("Preço por litro (R$)", value: $pricePerLiter)
 
                 if totalCost > 0 {
-                    HStack {
-                        Text("Total")
-                        Spacer()
-                        Text(Format.money(totalCost))
-                            .fontWeight(.semibold)
+                    LabeledContent("Total") {
+                        Text(Format.money(totalCost)).fontWeight(.semibold)
                     }
                 }
 
@@ -79,50 +46,39 @@ struct AddFuelView: View {
                         Text(type.label).tag(type)
                     }
                 }
-
                 Toggle("Tanque cheio", isOn: $isFullTank)
 
-                if isFullTank {
-                    Text("Marque quando encher o tanque até o limite: é assim que o consumo real é calculado.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                if let c = consumptionPreview {
+                    Text("Consumo estimado: \(Format.kmPerL(c))")
+                        .foregroundStyle(.blue)
                 }
-            }
 
-            if let consumption = consumptionPreview {
-                Section("Consumo estimado") {
-                    HStack {
-                        Label("Desde o último tanque cheio", systemImage: "gauge.with.dots.needle.50percent")
-                        Spacer()
-                        Text(Format.kmPerL(consumption))
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
-                    }
-                }
+                Button("Salvar") { save() }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!isValid)
+                    .frame(maxWidth: .infinity)
             }
-
-            Section {
-                Button {
-                    save()
-                } label: {
-                    Text("Salvar abastecimento")
-                        .frame(maxWidth: .infinity)
-                }
-                .disabled(!isValid)
-            }
+            .padding()
         }
         .navigationTitle("Novo abastecimento")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancelar") {
-                    dismiss()
-                }
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancelar") { dismiss() }
             }
         }
         .onAppear {
             odometer = vehicle?.odometerKm ?? 0
             fuelType = vehicle?.fuelType ?? .gasolina
+        }
+    }
+
+    private func field(_ title: String, value: Binding<Double>) -> some View {
+        LabeledContent(title) {
+            TextField("0", value: value, format: .number.precision(.fractionLength(2)))
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 120)
         }
     }
 
@@ -134,20 +90,16 @@ struct AddFuelView: View {
             totalCost: totalCost,
             odometerKm: odometer,
             isFullTank: isFullTank,
-            fuelTypeRaw: fuelType.rawValue,
-            notes: notes
+            fuelTypeRaw: fuelType.rawValue
         )
         context.insert(fill)
         if let vehicle, odometer > vehicle.odometerKm {
             vehicle.odometerKm = odometer
+        } else if vehicle == nil {
+            let v = VehicleInfo(odometerKm: odometer, fuelTypeRaw: fuelType.rawValue)
+            context.insert(v)
         }
         try? context.save()
         dismiss()
-    }
-}
-
-#Preview {
-    NavigationStack {
-        AddFuelView()
     }
 }

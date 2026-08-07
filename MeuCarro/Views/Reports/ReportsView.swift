@@ -30,156 +30,90 @@ struct ReportsView: View {
         return result
     }
 
-    private var totalSpend: Double {
-        fills.reduce(0) { $0 + $1.totalCost }
-    }
-
-    private var totalTripKm: Double {
-        trips.reduce(0) { $0 + $1.distanceKm }
-    }
-
+    private var totalSpend: Double { fills.reduce(0) { $0 + $1.totalCost } }
+    private var totalTripKm: Double { trips.reduce(0) { $0 + $1.distanceKm } }
     private var averageConsumption: Double? {
         guard !consumptionSeries.isEmpty else { return nil }
         return consumptionSeries.reduce(0) { $0 + $1.kmPerL } / Double(consumptionSeries.count)
     }
 
     var body: some View {
-        List {
-            if fills.isEmpty && trips.isEmpty {
-                Section {
-                    ContentUnavailableView {
-                        Label("Sem dados", systemImage: "chart.bar.xaxis")
-                    } description: {
-                        Text("Registre abastecimentos e percursos para ver os relatórios.")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                if fills.isEmpty && trips.isEmpty {
+                    Text("Sem dados ainda. Registre abastecimentos e percursos.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    group("Resumo") {
+                        row("Gasto total", Format.money(totalSpend))
+                        row("Percorrido", Format.km(totalTripKm))
+                        row("Consumo médio", averageConsumption.map(Format.kmPerL) ?? "—")
                     }
-                }
-            } else {
-                Section("Resumo") {
-                    HStack {
-                        Label("Gasto total", systemImage: "dollarsign.circle.fill")
-                        Spacer()
-                        Text(Format.money(totalSpend)).fontWeight(.semibold)
-                    }
-                    HStack {
-                        Label("Percorrido", systemImage: "mappin.and.ellipse")
-                        Spacer()
-                        Text(Format.km(totalTripKm)).fontWeight(.semibold)
-                    }
-                    HStack {
-                        Label("Consumo médio", systemImage: "gauge.with.dots.needle.50percent")
-                        Spacer()
-                        Text(averageConsumption.map(Format.kmPerL) ?? "--").fontWeight(.semibold)
-                    }
-                }
 
-                Section("Período") {
                     Picker("Período", selection: $months) {
-                        Text("3 meses").tag(3)
-                        Text("6 meses").tag(6)
-                        Text("12 meses").tag(12)
+                        Text("3 m").tag(3)
+                        Text("6 m").tag(6)
+                        Text("12 m").tag(12)
                     }
                     .pickerStyle(.segmented)
-                }
 
-                Section("Gasto com combustível") {
-                    chartContainer {
+                    group("Gasto com combustível") {
                         Chart(monthly) { item in
                             BarMark(
                                 x: .value("Mês", item.month, unit: .month),
                                 y: .value("Gasto", item.total)
                             )
-                            .foregroundStyle(.green.gradient)
-                            .cornerRadius(4)
                         }
                         .frame(height: 180)
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .month)) { _ in
-                                AxisValueLabel(format: .dateTime.month(.abbreviated))
-                            }
-                        }
                     }
-                }
 
-                Section("Custo por km") {
-                    chartContainer {
-                        Chart(monthly.filter { $0.distanceKm > 0 }) { item in
-                            LineMark(
-                                x: .value("Mês", item.month, unit: .month),
-                                y: .value("Custo/km", item.total / item.distanceKm)
-                            )
-                            .foregroundStyle(.orange)
-                            .interpolationMethod(.catmullRom)
-                        }
-                        .frame(height: 160)
-                        .chartYAxisLabel("R$/km", position: .trailing)
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .month)) { _ in
-                                AxisValueLabel(format: .dateTime.month(.abbreviated))
-                            }
-                        }
-                    }
-                }
-
-                Section("Consumo real (tanque cheio)") {
-                    if consumptionSeries.isEmpty {
-                        Text("Registre pelo menos dois abastecimentos de tanque cheio para calcular o consumo.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        chartContainer {
+                    group("Consumo (tanque cheio)") {
+                        if consumptionSeries.isEmpty {
+                            Text("Precisa de 2+ tanques cheios.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
                             Chart(consumptionSeries) { sample in
                                 LineMark(
                                     x: .value("Data", sample.date),
-                                    y: .value("Consumo", sample.kmPerL)
+                                    y: .value("km/L", sample.kmPerL)
                                 )
-                                .foregroundStyle(.blue)
-                                .interpolationMethod(.catmullRom)
-                                PointMark(
-                                    x: .value("Data", sample.date),
-                                    y: .value("Consumo", sample.kmPerL)
-                                )
-                                .foregroundStyle(.blue)
                             }
-                            .frame(height: 180)
-                            .chartYAxisLabel("km/L", position: .trailing)
+                            .frame(height: 160)
                         }
                     }
-                }
 
-                Section("Distância percorrida por mês") {
-                    chartContainer {
+                    group("Distância por mês") {
                         Chart(tripMonthly) { item in
                             BarMark(
                                 x: .value("Mês", item.month, unit: .month),
-                                y: .value("Distância", item.total)
+                                y: .value("km", item.total)
                             )
-                            .foregroundStyle(.blue.gradient)
-                            .cornerRadius(4)
                         }
                         .frame(height: 160)
-                        .chartYAxisLabel("km", position: .trailing)
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .month)) { _ in
-                                AxisValueLabel(format: .dateTime.month(.abbreviated))
-                            }
-                        }
                     }
                 }
             }
+            .padding()
         }
         .navigationTitle("Relatórios")
     }
 
-    private func chartContainer<C: View>(@ViewBuilder content: () -> C) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private func row(_ title: String, _ value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value).fontWeight(.semibold)
+        }
+    }
+
+    private func group<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title).font(.headline)
             content()
         }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ReportsView()
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
 }

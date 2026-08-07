@@ -6,11 +6,11 @@ struct AddTripView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Query private var vehicles: [VehicleInfo]
-    @State private var recorder: TripRecorder
+    @StateObject private var recorder: TripRecorder
     @State private var showDiscardConfirm = false
 
     init(locationService: LocationService) {
-        _recorder = State(initialValue: TripRecorder(service: locationService))
+        _recorder = StateObject(wrappedValue: TripRecorder(service: locationService))
     }
 
     var body: some View {
@@ -20,101 +20,53 @@ struct AddTripView: View {
                     .frame(maxHeight: .infinity)
 
                 VStack(spacing: 14) {
-                    statsRow
-                    controls
+                    HStack {
+                        metric("Distância", Format.km(recorder.distanceKm))
+                        metric("Tempo", Format.duration(recorder.elapsed))
+                        metric("Média", Format.speed(recorder.avgSpeedKmh))
+                        metric("Máx", Format.speed(recorder.maxSpeedKmh))
+                    }
+
+                    if recorder.isRecording {
+                        HStack {
+                            Button("Descartar", role: .destructive) { showDiscardConfirm = true }
+                                .buttonStyle(.bordered)
+                            Button("Salvar e parar") { save() }
+                                .buttonStyle(.borderedProminent)
+                        }
+                    } else {
+                        Button("Iniciar gravação") { recorder.start() }
+                            .buttonStyle(.borderedProminent)
+                    }
                 }
                 .padding()
-                .background(.regularMaterial)
             }
             .navigationTitle("Registrar percurso")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancelar") {
-                        if recorder.isRecording {
-                            _ = recorder.stop()
-                        }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fechar") {
+                        if recorder.isRecording { _ = recorder.stop() }
                         dismiss()
                     }
                 }
             }
-            .confirmationDialog("Descartar este percurso?", isPresented: $showDiscardConfirm, titleVisibility: .visible) {
+            .confirmationDialog("Descartar percurso?", isPresented: $showDiscardConfirm) {
                 Button("Descartar", role: .destructive) {
                     _ = recorder.stop()
                     dismiss()
                 }
             }
-            .onAppear {
-                recorder.start()
-            }
+            .onAppear { recorder.start() }
         }
     }
 
-    // MARK: - Estatísticas ao vivo
-
-    private var statsRow: some View {
-        HStack(spacing: 8) {
-            liveStat(title: "Distância", value: Format.km(recorder.distanceKm))
-            liveStat(title: "Tempo", value: elapsedText)
-            liveStat(title: "Vel. média", value: Format.speed(recorder.avgSpeedKmh))
-            liveStat(title: "Vel. máx", value: Format.speed(recorder.maxSpeedKmh))
+    private func metric(_ title: String, _ value: String) -> some View {
+        VStack {
+            Text(title).font(.caption2).foregroundStyle(.secondary)
+            Text(value).font(.caption).fontWeight(.semibold)
         }
-    }
-
-    private var elapsedText: String {
-        Format.duration(recorder.elapsed)
-    }
-
-    private func liveStat(title: String, value: String) -> some View {
-        TimelineView(.periodic(from: .now, by: 0.5)) { _ in
-            VStack(spacing: 2) {
-                Text(title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Text(value)
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    // MARK: - Controles
-
-    @ViewBuilder
-    private var controls: some View {
-        if recorder.isRecording {
-            HStack(spacing: 12) {
-                Button {
-                    showDiscardConfirm = true
-                } label: {
-                    Label("Descartar", systemImage: "xmark.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .tint(.red)
-
-                Button {
-                    save()
-                } label: {
-                    Label("Salvar e parar", systemImage: "checkmark.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.green)
-            }
-        } else {
-            Button {
-                recorder.start()
-            } label: {
-                Label("Retomar gravação", systemImage: "record.circle")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-        }
+        .frame(maxWidth: .infinity)
     }
 
     private func save() {
@@ -131,10 +83,8 @@ struct AddTripView: View {
     }
 }
 
-// MARK: - Mapa ao vivo
-
 struct TripRecorderMapView: View {
-    let recorder: TripRecorder
+    @ObservedObject var recorder: TripRecorder
     @State private var camera: MapCameraPosition = .automatic
 
     var body: some View {
@@ -143,28 +93,13 @@ struct TripRecorderMapView: View {
                 MapPolyline(coordinates: recorder.points.map(\.coordinate))
                     .stroke(.blue, lineWidth: 4)
             }
-            if let first = recorder.points.first {
-                Marker("Início", systemImage: "flag.fill", coordinate: first.coordinate)
-                    .tint(.green)
-            }
             if let last = recorder.latestPoint {
-                Marker("Atual", systemImage: "location.fill", coordinate: last.coordinate)
-                    .tint(.red)
+                Marker("Atual", coordinate: last.coordinate)
             }
         }
-        .mapControls {
-            MapCompass()
-            MapScaleView()
-        }
-        .onChange(of: recorder.points.count) {
-            guard let last = recorder.latestPoint else { return }
-            withAnimation {
+        .onChange(of: recorder.points.count) { _ in
+            if let last = recorder.latestPoint {
                 camera = .camera(MapCamera(centerCoordinate: last.coordinate, distance: 1500))
-            }
-        }
-        .onAppear {
-            if let location = recorder.currentLocation {
-                camera = .camera(MapCamera(centerCoordinate: location.coordinate, distance: 1000))
             }
         }
     }

@@ -1,15 +1,14 @@
 import CoreLocation
 import Foundation
-import Observation
+import Combine
 
-@Observable
-final class PerformanceService {
+final class PerformanceService: ObservableObject {
     private let service: LocationService
 
-    private(set) var isArmed = false
-    private(set) var isTiming = false
-    private(set) var currentSpeedKmh: Double = 0
-    private(set) var result: TimeInterval?
+    @Published private(set) var isArmed = false
+    @Published private(set) var isTiming = false
+    @Published private(set) var currentSpeedKmh: Double = 0
+    @Published private(set) var result: TimeInterval?
 
     private var startDate: Date?
 

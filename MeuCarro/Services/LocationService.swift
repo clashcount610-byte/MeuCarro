@@ -1,13 +1,12 @@
 import CoreLocation
 import Foundation
-import Observation
+import Combine
 
-@Observable
-final class LocationService: NSObject, CLLocationManagerDelegate {
+final class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
 
-    private(set) var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    private(set) var lastLocation: CLLocation?
+    @Published private(set) var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    @Published private(set) var lastLocation: CLLocation?
     var onUpdate: ((CLLocation) -> Void)?
 
     override init() {
