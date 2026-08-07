@@ -66,7 +66,7 @@ private struct TripsContent: View {
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                                .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
                             .contextMenu {

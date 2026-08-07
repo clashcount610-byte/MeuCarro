@@ -97,7 +97,7 @@ struct SettingsView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private func clearAll() {

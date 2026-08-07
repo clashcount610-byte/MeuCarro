@@ -21,7 +21,7 @@ struct TripDetailView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
 
                 if trip.points.count > 1 {
                     Chart {
@@ -34,7 +34,7 @@ struct TripDetailView: View {
                     }
                     .frame(height: 160)
                     .padding()
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
                 }
             }
             .padding()

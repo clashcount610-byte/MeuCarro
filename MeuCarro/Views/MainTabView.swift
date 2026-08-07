@@ -34,7 +34,7 @@ struct MainTabView: View {
                 tabButton(index: 3, icon: "flag.checkered",  label: "Performance")
                 tabButton(index: 4, icon: "chart.bar.fill",  label: "Relatórios")
             }
-            .background(.bar)
+            .background(Color(UIColor.systemBackground))
         }
         .ignoresSafeArea(edges: .bottom)
     }

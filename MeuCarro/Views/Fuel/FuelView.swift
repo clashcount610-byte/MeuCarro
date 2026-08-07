@@ -88,7 +88,7 @@ private struct FuelContent: View {
                             }
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                            .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
                             .contextMenu {
                                 Button("Excluir", role: .destructive) { onDelete(fill) }
                             }

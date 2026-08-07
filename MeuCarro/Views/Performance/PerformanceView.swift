@@ -54,7 +54,7 @@ private struct PerformanceContent: View {
                                 .fontWeight(.bold)
                         }
                         .padding()
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                        .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
                         .contextMenu {
                             Button("Excluir", role: .destructive) { onDelete(run) }
                         }
@@ -78,7 +78,7 @@ private struct PerformanceContent: View {
             Image(systemName: "chevron.right").foregroundStyle(.secondary)
         }
         .padding()
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .background(Color(UIColor.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
         .foregroundStyle(.primary)
     }
 }
