@@ -12,11 +12,15 @@ struct TripDetailView: View {
                     .frame(height: 280)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    detailCard("Distância", Format.km(trip.distanceKm), icon: "point.topleft.down.to.point.bottomright.curvepath")
-                    detailCard("Tempo", Format.duration(trip.duration), icon: "clock.fill")
-                    detailCard("Vel. média", Format.speed(trip.avgSpeedKmh), icon: "arrow.right")
-                    detailCard("Vel. máxima", Format.speed(trip.maxSpeedKmh), icon: "gauge.with.dots.needle.100percent")
+                VStack(spacing: 12) {
+                    HStack(spacing: 12) {
+                        detailCard("Distância", Format.km(trip.distanceKm), icon: "point.topleft.down.to.point.bottomright.curvepath")
+                        detailCard("Tempo", Format.duration(trip.duration), icon: "clock.fill")
+                    }
+                    HStack(spacing: 12) {
+                        detailCard("Vel. média", Format.speed(trip.avgSpeedKmh), icon: "arrow.right")
+                        detailCard("Vel. máxima", Format.speed(trip.maxSpeedKmh), icon: "gauge.with.dots.needle.100percent")
+                    }
                 }
 
                 HStack {

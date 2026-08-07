@@ -134,31 +134,35 @@ struct DashboardView: View {
     // MARK: - Estatísticas
 
     private var statsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            statCard(
-                title: "Consumo médio",
-                value: averageConsumption.map(Format.kmPerL) ?? "--",
-                icon: "gauge.with.dots.needle.50percent",
-                color: .blue
-            )
-            statCard(
-                title: "Gasto no mês",
-                value: Format.money(monthStats.total),
-                icon: "dollarsign.circle.fill",
-                color: .green
-            )
-            statCard(
-                title: "Custo por km",
-                value: monthStats.costPerKm.map(Format.moneyPerKm) ?? "--",
-                icon: "sum",
-                color: .orange
-            )
-            statCard(
-                title: "Distância no mês",
-                value: Format.km(monthStats.distanceKm),
-                icon: "road.lanes",
-                color: .purple
-            )
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                statCard(
+                    title: "Consumo médio",
+                    value: averageConsumption.map(Format.kmPerL) ?? "--",
+                    icon: "gauge.with.dots.needle.50percent",
+                    color: .blue
+                )
+                statCard(
+                    title: "Gasto no mês",
+                    value: Format.money(monthStats.total),
+                    icon: "dollarsign.circle.fill",
+                    color: .green
+                )
+            }
+            HStack(spacing: 12) {
+                statCard(
+                    title: "Custo por km",
+                    value: monthStats.costPerKm.map(Format.moneyPerKm) ?? "--",
+                    icon: "sum",
+                    color: .orange
+                )
+                statCard(
+                    title: "Distância no mês",
+                    value: Format.km(monthStats.distanceKm),
+                    icon: "road.lanes",
+                    color: .purple
+                )
+            }
         }
     }
 
