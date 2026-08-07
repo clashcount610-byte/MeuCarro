@@ -21,7 +21,7 @@ struct MeuCarroApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            DashboardView()
         }
         .modelContainer(container)
     }
