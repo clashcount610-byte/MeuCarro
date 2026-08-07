@@ -38,64 +38,65 @@ struct ReportsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                if fills.isEmpty && trips.isEmpty {
-                    Text("Sem dados ainda. Registre abastecimentos e percursos.")
-                        .foregroundStyle(.secondary)
-                } else {
-                    group("Resumo") {
-                        row("Gasto total", Format.money(totalSpend))
-                        row("Percorrido", Format.km(totalTripKm))
-                        row("Consumo médio", averageConsumption.map(Format.kmPerL) ?? "—")
-                    }
+        List {
+            if fills.isEmpty && trips.isEmpty {
+                Text("Sem dados ainda. Registre abastecimentos e percursos.")
+                    .foregroundStyle(.secondary)
+            } else {
+                Section("Resumo") {
+                    row("Gasto total", Format.money(totalSpend))
+                    row("Percorrido", Format.km(totalTripKm))
+                    row("Consumo médio", averageConsumption.map(Format.kmPerL) ?? "—")
+                }
 
+                Section {
                     Picker("Período", selection: $months) {
                         Text("3 m").tag(3)
                         Text("6 m").tag(6)
                         Text("12 m").tag(12)
                     }
                     .pickerStyle(.segmented)
+                }
+                .listRowBackground(Color.clear)
 
-                    group("Gasto com combustível") {
-                        Chart(monthly) { item in
-                            BarMark(
-                                x: .value("Mês", item.month, unit: .month),
-                                y: .value("Gasto", item.total)
-                            )
-                        }
-                        .frame(height: 180)
+                Section("Gasto com combustível") {
+                    Chart(monthly) { item in
+                        BarMark(
+                            x: .value("Mês", item.month, unit: .month),
+                            y: .value("Gasto", item.total)
+                        )
                     }
+                    .frame(height: 180)
+                }
 
-                    group("Consumo (tanque cheio)") {
-                        if consumptionSeries.isEmpty {
-                            Text("Precisa de 2+ tanques cheios.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Chart(consumptionSeries) { sample in
-                                LineMark(
-                                    x: .value("Data", sample.date),
-                                    y: .value("km/L", sample.kmPerL)
-                                )
-                            }
-                            .frame(height: 160)
-                        }
-                    }
-
-                    group("Distância por mês") {
-                        Chart(tripMonthly) { item in
-                            BarMark(
-                                x: .value("Mês", item.month, unit: .month),
-                                y: .value("km", item.total)
+                Section("Consumo (tanque cheio)") {
+                    if consumptionSeries.isEmpty {
+                        Text("Precisa de 2+ tanques cheios.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Chart(consumptionSeries) { sample in
+                            LineMark(
+                                x: .value("Data", sample.date),
+                                y: .value("km/L", sample.kmPerL)
                             )
                         }
                         .frame(height: 160)
                     }
                 }
+
+                Section("Distância por mês") {
+                    Chart(tripMonthly) { item in
+                        BarMark(
+                            x: .value("Mês", item.month, unit: .month),
+                            y: .value("km", item.total)
+                        )
+                    }
+                    .frame(height: 160)
+                }
             }
-            .padding()
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Relatórios")
     }
 

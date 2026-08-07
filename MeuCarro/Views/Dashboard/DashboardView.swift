@@ -19,56 +19,62 @@ struct DashboardView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+        List {
+            Section {
                 Text(vehicle?.name ?? "Meu Carro")
                     .font(.largeTitle.bold())
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets())
 
-                groupBox("Odômetro") {
-                    Text(odometerText + " km")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                }
+            Section("Odômetro") {
+                Text(odometerText + " km")
+                    .font(.system(size: 36, weight: .bold, design: .rounded))
+            }
 
-                groupBox("Resumo do mês") {
-                    row("Consumo médio", avgConsumption.map(Format.kmPerL) ?? "—")
-                    row("Gasto", Format.money(monthStats.total))
-                    row("Custo/km", monthStats.costPerKm.map(Format.moneyPerKm) ?? "—")
-                    row("Distância", Format.km(monthStats.distanceKm))
-                }
+            Section("Resumo do mês") {
+                row("Consumo médio", avgConsumption.map(Format.kmPerL) ?? "—")
+                row("Gasto", Format.money(monthStats.total))
+                row("Custo/km", monthStats.costPerKm.map(Format.moneyPerKm) ?? "—")
+                row("Distância", Format.km(monthStats.distanceKm))
+            }
 
-                if let last = fills.first {
-                    groupBox("Último abastecimento") {
-                        row("Data", Format.dateMedium.string(from: last.date))
-                        row("Volume", Format.liters(last.liters))
-                        row("Total", Format.money(last.totalCost))
-                        if let c = series.last?.kmPerL {
-                            row("Consumo", Format.kmPerL(c))
-                        }
+            if let last = fills.first {
+                Section("Último abastecimento") {
+                    row("Data", Format.dateMedium.string(from: last.date))
+                    row("Volume", Format.liters(last.liters))
+                    row("Total", Format.money(last.totalCost))
+                    if let c = series.last?.kmPerL {
+                        row("Consumo", Format.kmPerL(c))
                     }
                 }
+            }
 
-                if !trips.isEmpty {
-                    groupBox("Percursos recentes") {
-                        ForEach(Array(trips.prefix(3))) { trip in
-                            NavigationLink {
-                                TripDetailView(trip: trip)
-                            } label: {
-                                HStack {
-                                    Text(Format.km(trip.distanceKm))
-                                    Spacer()
-                                    Text(Format.dateTimeShort.string(from: trip.startDate))
-                                        .foregroundStyle(.secondary)
-                                }
+            if !trips.isEmpty {
+                Section("Percursos recentes") {
+                    ForEach(Array(trips.prefix(3))) { trip in
+                        NavigationLink {
+                            TripDetailView(trip: trip)
+                        } label: {
+                            HStack {
+                                Text(Format.km(trip.distanceKm))
+                                Spacer()
+                                Text(Format.dateTimeShort.string(from: trip.startDate))
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
                 }
+            }
 
+            Section {
                 Button("Registrar abastecimento") { showAddFuel = true }
                     .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
             }
-            .padding()
+            .listRowBackground(Color.clear)
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Início")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

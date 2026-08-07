@@ -6,22 +6,26 @@ struct PerformanceView: View {
     @Query(sort: \PerformanceRun.date, order: .reverse) private var runs: [PerformanceRun]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+        List {
+            Section {
                 NavigationLink {
                     ZeroToHundredView()
                 } label: {
                     labelCard("0–100 km/h", "Medição por GPS", "gauge.with.dots.needle.67percent")
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
 
                 NavigationLink {
                     ColdStartView()
                 } label: {
                     labelCard("Cold Start", "Cronômetro de partida", "timer")
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
 
-                Text("Histórico").font(.headline).padding(.top, 8)
-
+            Section("Histórico") {
                 if runs.isEmpty {
                     Text("Nenhum teste salvo ainda.")
                         .foregroundStyle(.secondary)
@@ -38,8 +42,6 @@ struct PerformanceView: View {
                             Text(Format.stopwatch(run.duration))
                                 .fontWeight(.bold)
                         }
-                        .padding()
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
                         .contextMenu {
                             Button("Excluir", role: .destructive) {
                                 context.delete(run)
@@ -49,8 +51,8 @@ struct PerformanceView: View {
                     }
                 }
             }
-            .padding()
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Performance")
     }
 
