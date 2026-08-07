@@ -49,7 +49,7 @@ struct MainTabView: View {
                 Text(label)
                     .font(.system(size: 10))
             }
-            .foregroundStyle(selectedTab == index ? .accentColor : .secondary)
+            .foregroundStyle(selectedTab == index ? .tint : .secondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
         }
