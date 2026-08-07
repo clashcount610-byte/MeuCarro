@@ -44,182 +44,138 @@ struct ReportsView: View {
     }
 
     var body: some View {
-        ScrollView {
+        List {
             if fills.isEmpty && trips.isEmpty {
-                ContentUnavailableView {
-                    Label("Sem dados", systemImage: "chart.bar.xaxis")
-                } description: {
-                    Text("Registre abastecimentos e percursos para ver os relatórios.")
+                Section {
+                    ContentUnavailableView {
+                        Label("Sem dados", systemImage: "chart.bar.xaxis")
+                    } description: {
+                        Text("Registre abastecimentos e percursos para ver os relatórios.")
+                    }
                 }
             } else {
-                VStack(spacing: 20) {
-                    summaryRow
-                    periodPicker
-                    spendChartCard
-                    costPerKmChartCard
-                    consumptionChartCard
-                    tripChartCard
+                Section("Resumo") {
+                    HStack {
+                        Label("Gasto total", systemImage: "dollarsign.circle.fill")
+                        Spacer()
+                        Text(Format.money(totalSpend)).fontWeight(.semibold)
+                    }
+                    HStack {
+                        Label("Percorrido", systemImage: "mappin.and.ellipse")
+                        Spacer()
+                        Text(Format.km(totalTripKm)).fontWeight(.semibold)
+                    }
+                    HStack {
+                        Label("Consumo médio", systemImage: "gauge.with.dots.needle.50percent")
+                        Spacer()
+                        Text(averageConsumption.map(Format.kmPerL) ?? "--").fontWeight(.semibold)
+                    }
                 }
-                .padding()
+
+                Section("Período") {
+                    Picker("Período", selection: $months) {
+                        Text("3 meses").tag(3)
+                        Text("6 meses").tag(6)
+                        Text("12 meses").tag(12)
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("Gasto com combustível") {
+                    chartContainer {
+                        Chart(monthly) { item in
+                            BarMark(
+                                x: .value("Mês", item.month, unit: .month),
+                                y: .value("Gasto", item.total)
+                            )
+                            .foregroundStyle(.green.gradient)
+                            .cornerRadius(4)
+                        }
+                        .frame(height: 180)
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .month)) { _ in
+                                AxisValueLabel(format: .dateTime.month(.abbreviated))
+                            }
+                        }
+                    }
+                }
+
+                Section("Custo por km") {
+                    chartContainer {
+                        Chart(monthly.filter { $0.distanceKm > 0 }) { item in
+                            LineMark(
+                                x: .value("Mês", item.month, unit: .month),
+                                y: .value("Custo/km", item.total / item.distanceKm)
+                            )
+                            .foregroundStyle(.orange)
+                            .interpolationMethod(.catmullRom)
+                        }
+                        .frame(height: 160)
+                        .chartYAxisLabel("R$/km", position: .trailing)
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .month)) { _ in
+                                AxisValueLabel(format: .dateTime.month(.abbreviated))
+                            }
+                        }
+                    }
+                }
+
+                Section("Consumo real (tanque cheio)") {
+                    if consumptionSeries.isEmpty {
+                        Text("Registre pelo menos dois abastecimentos de tanque cheio para calcular o consumo.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        chartContainer {
+                            Chart(consumptionSeries) { sample in
+                                LineMark(
+                                    x: .value("Data", sample.date),
+                                    y: .value("Consumo", sample.kmPerL)
+                                )
+                                .foregroundStyle(.blue)
+                                .interpolationMethod(.catmullRom)
+                                PointMark(
+                                    x: .value("Data", sample.date),
+                                    y: .value("Consumo", sample.kmPerL)
+                                )
+                                .foregroundStyle(.blue)
+                            }
+                            .frame(height: 180)
+                            .chartYAxisLabel("km/L", position: .trailing)
+                        }
+                    }
+                }
+
+                Section("Distância percorrida por mês") {
+                    chartContainer {
+                        Chart(tripMonthly) { item in
+                            BarMark(
+                                x: .value("Mês", item.month, unit: .month),
+                                y: .value("Distância", item.total)
+                            )
+                            .foregroundStyle(.blue.gradient)
+                            .cornerRadius(4)
+                        }
+                        .frame(height: 160)
+                        .chartYAxisLabel("km", position: .trailing)
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .month)) { _ in
+                                AxisValueLabel(format: .dateTime.month(.abbreviated))
+                            }
+                        }
+                    }
+                }
             }
         }
         .navigationTitle("Relatórios")
     }
 
-    // MARK: - Resumo
-
-    private var summaryRow: some View {
-        HStack(spacing: 12) {
-            miniStat(title: "Gasto total", value: Format.money(totalSpend), icon: "dollarsign.circle.fill", color: .green)
-            miniStat(title: "Percorrido", value: Format.km(totalTripKm), icon: "mappin.and.ellipse", color: .blue)
-            miniStat(title: "Consumo médio", value: averageConsumption.map(Format.kmPerL) ?? "--", icon: "gauge.with.dots.needle.50percent", color: .purple)
-        }
-    }
-
-    private func miniStat(title: String, value: String, icon: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Image(systemName: icon)
-                .font(.subheadline)
-                .foregroundStyle(color)
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.bold)
-                .minimumScaleFactor(0.6)
-                .lineLimit(1)
-            Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemGroupedBackground)))
-    }
-
-    private var periodPicker: some View {
-        Picker("Período", selection: $months) {
-            Text("3 meses").tag(3)
-            Text("6 meses").tag(6)
-            Text("12 meses").tag(12)
-        }
-        .pickerStyle(.segmented)
-    }
-
-    // MARK: - Gráficos
-
-    private var spendChartCard: some View {
+    private func chartContainer<C: View>(@ViewBuilder content: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Gasto com combustível")
-                .font(.headline)
-            Chart(monthly) { item in
-                BarMark(
-                    x: .value("Mês", item.month, unit: .month),
-                    y: .value("Gasto", item.total)
-                )
-                .foregroundStyle(.green.gradient)
-                .cornerRadius(4)
-            }
-            .frame(height: 180)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated))
-                }
-            }
+            content()
         }
-        .chartCard()
+        .frame(maxWidth: .infinity)
     }
-
-    private var costPerKmChartCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Custo por km")
-                .font(.headline)
-            Chart(monthly.filter { $0.distanceKm > 0 }) { item in
-                LineMark(
-                    x: .value("Mês", item.month, unit: .month),
-                    y: .value("Custo/km", item.total / item.distanceKm)
-                )
-                .foregroundStyle(.orange)
-                .interpolationMethod(.catmullRom)
-            }
-            .frame(height: 160)
-            .chartYAxisLabel("R$/km", position: .trailing)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated))
-                }
-            }
-        }
-        .chartCard()
-    }
-
-    private var consumptionChartCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Consumo real (tanque cheio)")
-                .font(.headline)
-            if consumptionSeries.isEmpty {
-                Text("Registre pelo menos dois abastecimentos de tanque cheio para calcular o consumo.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                Chart(consumptionSeries) { sample in
-                    LineMark(
-                        x: .value("Data", sample.date),
-                        y: .value("Consumo", sample.kmPerL)
-                    )
-                    .foregroundStyle(.blue)
-                    .interpolationMethod(.catmullRom)
-                    PointMark(
-                        x: .value("Data", sample.date),
-                        y: .value("Consumo", sample.kmPerL)
-                    )
-                    .foregroundStyle(.blue)
-                }
-                .frame(height: 180)
-                .chartYAxisLabel("km/L", position: .trailing)
-            }
-        }
-        .chartCard()
-    }
-
-    private var tripChartCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Distância percorrida por mês")
-                .font(.headline)
-            Chart(tripMonthly) { item in
-                BarMark(
-                    x: .value("Mês", item.month, unit: .month),
-                    y: .value("Distância", item.total)
-                )
-                .foregroundStyle(.blue.gradient)
-                .cornerRadius(4)
-            }
-            .frame(height: 160)
-            .chartYAxisLabel("km", position: .trailing)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { _ in
-                    AxisValueLabel(format: .dateTime.month(.abbreviated))
-                }
-            }
-        }
-        .chartCard()
-    }
-}
-
-// MARK: - Modificador de cartão
-
-struct ChartCard: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemGroupedBackground)))
-    }
-}
-
-extension View {
-    func chartCard() -> some View {
-        modifier(ChartCard())
-    }
-}
 
 #Preview {
     NavigationStack {
