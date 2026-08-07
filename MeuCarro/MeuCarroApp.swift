@@ -12,20 +12,27 @@ struct MeuCarroApp: App {
             Trip.self,
             PerformanceRun.self,
         ])
+        
         do {
             container = try ModelContainer(
                 for: schema,
                 configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)]
             )
         } catch {
-            print("Erro ao carregar banco de dados persistente: \(error). Tentando contêiner em memória.")
+            print("Erro ao carregar banco persistente: \(error). Tentando modo em memória.")
             do {
                 container = try ModelContainer(
                     for: schema,
                     configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)]
                 )
             } catch {
-                fatalError("Falha crítica ao inicializar o ModelContainer do SwiftData: \(error)")
+                print("Erro ao carregar modo em memória: \(error). Criando contêiner de contingência.")
+                let fallbackConfig = ModelConfiguration(isStoredInMemoryOnly: true)
+                if let fallback = try? ModelContainer(for: schema, configurations: [fallbackConfig]) {
+                    container = fallback
+                } else {
+                    container = try! ModelContainer(for: Schema([]))
+                }
             }
         }
     }
