@@ -18,10 +18,15 @@ struct MeuCarroApp: App {
                 configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)]
             )
         } catch {
-            container = try! ModelContainer(
-                for: schema,
-                configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)]
-            )
+            print("Erro ao carregar banco de dados persistente: \(error). Tentando contêiner em memória.")
+            do {
+                container = try ModelContainer(
+                    for: schema,
+                    configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)]
+                )
+            } catch {
+                fatalError("Falha crítica ao inicializar o ModelContainer do SwiftData: \(error)")
+            }
         }
     }
 
