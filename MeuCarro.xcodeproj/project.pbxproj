@@ -3,20 +3,65 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 56;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		A100000000000000000000E1 /* MeuCarroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B1 /* MeuCarroApp.swift */; };
+		A100000000000000000000E2 /* VehicleInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* VehicleInfo.swift */; };
+		A100000000000000000000E3 /* FuelFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B3 /* FuelFill.swift */; };
+		A100000000000000000000E4 /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B4 /* Trip.swift */; };
+		A100000000000000000000E5 /* TripPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B5 /* TripPoint.swift */; };
+		A100000000000000000000E6 /* PerformanceRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B6 /* PerformanceRun.swift */; };
+		A100000000000000000000E7 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B7 /* Formatters.swift */; };
+		A100000000000000000000E8 /* FuelCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B8 /* FuelCalculator.swift */; };
+		A100000000000000000000E9 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B9 /* LocationService.swift */; };
+		A100000000000000000000F1 /* PerformanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C1 /* PerformanceService.swift */; };
+		A100000000000000000000F2 /* TripRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C2 /* TripRecorder.swift */; };
+		A100000000000000000000F3 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C3 /* MainTabView.swift */; };
+		A100000000000000000000F4 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C4 /* DashboardView.swift */; };
+		A100000000000000000000F5 /* FuelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C5 /* FuelView.swift */; };
+		A100000000000000000000F6 /* AddFuelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C6 /* AddFuelView.swift */; };
+		A100000000000000000000F7 /* FuelComparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C7 /* FuelComparatorView.swift */; };
+		A100000000000000000000F8 /* TripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C8 /* TripsView.swift */; };
+		A100000000000000000000F9 /* AddTripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C9 /* AddTripView.swift */; };
+		A100000000000000000000G1 /* TripDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D1 /* TripDetailView.swift */; };
+		A100000000000000000000G2 /* PerformanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D2 /* PerformanceView.swift */; };
+		A100000000000000000000G3 /* ZeroToHundredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D3 /* ZeroToHundredView.swift */; };
+		A100000000000000000000G4 /* ColdStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D4 /* ColdStartView.swift */; };
+		A100000000000000000000G5 /* ReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D5 /* ReportsView.swift */; };
+		A100000000000000000000G6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D6 /* SettingsView.swift */; };
+		A100000000000000000000G7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000D7 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A100000000000000000000A1 /* MeuCarro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeuCarro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A100000000000000000000B1 /* MeuCarroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeuCarroApp.swift; sourceTree = "<group>"; };
+		A100000000000000000000B2 /* VehicleInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleInfo.swift; sourceTree = "<group>"; };
+		A100000000000000000000B3 /* FuelFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelFill.swift; sourceTree = "<group>"; };
+		A100000000000000000000B4 /* Trip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		A100000000000000000000B5 /* TripPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPoint.swift; sourceTree = "<group>"; };
+		A100000000000000000000B6 /* PerformanceRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceRun.swift; sourceTree = "<group>"; };
+		A100000000000000000000B7 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		A100000000000000000000B8 /* FuelCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelCalculator.swift; sourceTree = "<group>"; };
+		A100000000000000000000B9 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		A100000000000000000000C1 /* PerformanceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceService.swift; sourceTree = "<group>"; };
+		A100000000000000000000C2 /* TripRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripRecorder.swift; sourceTree = "<group>"; };
+		A100000000000000000000C3 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C4 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C5 /* FuelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C6 /* AddFuelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFuelView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C7 /* FuelComparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelComparatorView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C8 /* TripsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsView.swift; sourceTree = "<group>"; };
+		A100000000000000000000C9 /* AddTripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTripView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D1 /* TripDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D2 /* PerformanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D3 /* ZeroToHundredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroToHundredView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D4 /* ColdStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColdStartView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D5 /* ReportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A100000000000000000000D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		A100000000000000000000A2 /* MeuCarro */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MeuCarro;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A100000000000000000000A3 /* Frameworks */ = {
@@ -32,7 +77,7 @@
 		A100000000000000000000A4 = {
 			isa = PBXGroup;
 			children = (
-				A100000000000000000000A2 /* MeuCarro */,
+				A100000000000000000000H1 /* MeuCarro */,
 				A100000000000000000000A5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +88,110 @@
 				A100000000000000000000A1 /* MeuCarro.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H1 /* MeuCarro */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000B1 /* MeuCarroApp.swift */,
+				A100000000000000000000H2 /* Models */,
+				A100000000000000000000H3 /* Services */,
+				A100000000000000000000H4 /* Views */,
+				A100000000000000000000D7 /* Assets.xcassets */,
+			);
+			path = MeuCarro;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000B2 /* VehicleInfo.swift */,
+				A100000000000000000000B3 /* FuelFill.swift */,
+				A100000000000000000000B4 /* Trip.swift */,
+				A100000000000000000000B5 /* TripPoint.swift */,
+				A100000000000000000000B6 /* PerformanceRun.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000B7 /* Formatters.swift */,
+				A100000000000000000000B8 /* FuelCalculator.swift */,
+				A100000000000000000000B9 /* LocationService.swift */,
+				A100000000000000000000C1 /* PerformanceService.swift */,
+				A100000000000000000000C2 /* TripRecorder.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000C3 /* MainTabView.swift */,
+				A100000000000000000000H5 /* Dashboard */,
+				A100000000000000000000H6 /* Fuel */,
+				A100000000000000000000H7 /* Trips */,
+				A100000000000000000000H8 /* Performance */,
+				A100000000000000000000H9 /* Reports */,
+				A100000000000000000000H10 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H5 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000C4 /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H6 /* Fuel */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000C5 /* FuelView.swift */,
+				A100000000000000000000C6 /* AddFuelView.swift */,
+				A100000000000000000000C7 /* FuelComparatorView.swift */,
+			);
+			path = Fuel;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H7 /* Trips */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000C8 /* TripsView.swift */,
+				A100000000000000000000C9 /* AddTripView.swift */,
+				A100000000000000000000D1 /* TripDetailView.swift */,
+			);
+			path = Trips;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H8 /* Performance */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000D2 /* PerformanceView.swift */,
+				A100000000000000000000D3 /* ZeroToHundredView.swift */,
+				A100000000000000000000D4 /* ColdStartView.swift */,
+			);
+			path = Performance;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H9 /* Reports */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000D5 /* ReportsView.swift */,
+			);
+			path = Reports;
+			sourceTree = "<group>";
+		};
+		A100000000000000000000H10 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A100000000000000000000D6 /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -60,12 +209,7 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				A100000000000000000000A2 /* MeuCarro */,
-			);
 			name = MeuCarro;
-			packageProductDependencies = (
-			);
 			productName = MeuCarro;
 			productReference = A100000000000000000000A1 /* MeuCarro.app */;
 			productType = "com.apple.product-type.application";
@@ -86,7 +230,7 @@
 				};
 			};
 			buildConfigurationList = A100000000000000000000AB /* Build configuration list for PBXProject "MeuCarro" */;
-			compatibilityVersion = "Xcode 15.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -109,6 +253,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A100000000000000000000G7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +264,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A100000000000000000000E1 /* MeuCarroApp.swift in Sources */,
+				A100000000000000000000E2 /* VehicleInfo.swift in Sources */,
+				A100000000000000000000E3 /* FuelFill.swift in Sources */,
+				A100000000000000000000E4 /* Trip.swift in Sources */,
+				A100000000000000000000E5 /* TripPoint.swift in Sources */,
+				A100000000000000000000E6 /* PerformanceRun.swift in Sources */,
+				A100000000000000000000E7 /* Formatters.swift in Sources */,
+				A100000000000000000000E8 /* FuelCalculator.swift in Sources */,
+				A100000000000000000000E9 /* LocationService.swift in Sources */,
+				A100000000000000000000F1 /* PerformanceService.swift in Sources */,
+				A100000000000000000000F2 /* TripRecorder.swift in Sources */,
+				A100000000000000000000F3 /* MainTabView.swift in Sources */,
+				A100000000000000000000F4 /* DashboardView.swift in Sources */,
+				A100000000000000000000F5 /* FuelView.swift in Sources */,
+				A100000000000000000000F6 /* AddFuelView.swift in Sources */,
+				A100000000000000000000F7 /* FuelComparatorView.swift in Sources */,
+				A100000000000000000000F8 /* TripsView.swift in Sources */,
+				A100000000000000000000F9 /* AddTripView.swift in Sources */,
+				A100000000000000000000G1 /* TripDetailView.swift in Sources */,
+				A100000000000000000000G2 /* PerformanceView.swift in Sources */,
+				A100000000000000000000G3 /* ZeroToHundredView.swift in Sources */,
+				A100000000000000000000G4 /* ColdStartView.swift in Sources */,
+				A100000000000000000000G5 /* ReportsView.swift in Sources */,
+				A100000000000000000000G6 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
