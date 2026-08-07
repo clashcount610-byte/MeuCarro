@@ -1,11 +1,43 @@
 import SwiftData
 import SwiftUI
 
+// MARK: - Container (somente @Query)
 struct FuelView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \FuelFill.date, order: .reverse) private var fills: [FuelFill]
     @State private var showAdd = false
     @State private var tab = 0
+
+    var body: some View {
+        FuelContent(
+            fills: fills,
+            tab: $tab,
+            showAdd: $showAdd,
+            onDelete: { fill in
+                context.delete(fill)
+                try? context.save()
+            }
+        )
+        .navigationTitle("Combustível")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { showAdd = true } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $showAdd) {
+            NavigationStack { AddFuelView() }
+        }
+    }
+}
+
+// MARK: - View de conteúdo (sem @Query)
+private struct FuelContent: View {
+    let fills: [FuelFill]
+    @Binding var tab: Int
+    @Binding var showAdd: Bool
+    let onDelete: (FuelFill) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,19 +53,6 @@ struct FuelView: View {
             } else {
                 FuelComparatorView()
             }
-        }
-        .navigationTitle("Combustível")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showAdd = true
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
-        }
-        .sheet(isPresented: $showAdd) {
-            NavigationStack { AddFuelView() }
         }
     }
 
@@ -71,10 +90,7 @@ struct FuelView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
                             .contextMenu {
-                                Button("Excluir", role: .destructive) {
-                                    context.delete(fill)
-                                    try? context.save()
-                                }
+                                Button("Excluir", role: .destructive) { onDelete(fill) }
                             }
                         }
                     }

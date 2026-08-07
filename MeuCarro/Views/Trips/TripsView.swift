@@ -1,11 +1,39 @@
 import SwiftData
 import SwiftUI
 
+// MARK: - Container (somente @Query)
 struct TripsView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Trip.startDate, order: .reverse) private var trips: [Trip]
     @StateObject private var locationService = LocationService()
     @State private var showRecorder = false
+
+    var body: some View {
+        TripsContent(
+            trips: trips,
+            showRecorder: $showRecorder,
+            onDelete: { trip in
+                context.delete(trip)
+                try? context.save()
+            }
+        )
+        .navigationTitle("Percursos")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Registrar") { showRecorder = true }
+            }
+        }
+        .sheet(isPresented: $showRecorder) {
+            AddTripView(locationService: locationService)
+        }
+    }
+}
+
+// MARK: - View de conteúdo (sem @Query)
+private struct TripsContent: View {
+    let trips: [Trip]
+    @Binding var showRecorder: Bool
+    let onDelete: (Trip) -> Void
 
     var body: some View {
         Group {
@@ -42,25 +70,13 @@ struct TripsView: View {
                             }
                             .buttonStyle(.plain)
                             .contextMenu {
-                                Button("Excluir", role: .destructive) {
-                                    context.delete(trip)
-                                    try? context.save()
-                                }
+                                Button("Excluir", role: .destructive) { onDelete(trip) }
                             }
                         }
                     }
                     .padding()
                 }
             }
-        }
-        .navigationTitle("Percursos")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Registrar") { showRecorder = true }
-            }
-        }
-        .sheet(isPresented: $showRecorder) {
-            AddTripView(locationService: locationService)
         }
     }
 }
