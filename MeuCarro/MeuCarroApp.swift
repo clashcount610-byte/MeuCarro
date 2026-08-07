@@ -12,11 +12,10 @@ struct MeuCarroApp: App {
             Trip.self,
             PerformanceRun.self,
         ])
-        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
-            container = try ModelContainer(for: schema, configurations: [configuration])
+            container = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)])
         } catch {
-            fatalError("Falha ao criar o container do SwiftData: \(error)")
+            container = try! ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)])
         }
     }
 
